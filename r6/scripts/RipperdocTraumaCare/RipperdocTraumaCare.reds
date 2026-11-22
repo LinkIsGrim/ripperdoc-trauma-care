@@ -75,8 +75,19 @@ public abstract class RTCInjury {
         return 0.0;
     }
 
+    // The level Dark Future itself shows (e.g. "1 INJURY 50/100" is level 1), not Amount rounded up.
+    @if(ModuleExists("DarkFuture.Conditions"))
     public static func Level() -> Int32 {
-        return CeilF(RTCInjury.Amount() / 100.0);
+        let injury = DFInjuryConditionSystem.Get();
+        if !IsDefined(injury) || !injury.GetSystemToggleSettingValue() {
+            return 0;
+        }
+        return Cast<Int32>(injury.GetConditionLevel());
+    }
+
+    @if(!ModuleExists("DarkFuture.Conditions"))
+    public static func Level() -> Int32 {
+        return 0;
     }
 
     @if(ModuleExists("DarkFuture.Conditions"))
@@ -151,8 +162,10 @@ public class RTCPanel {
             return false;
         }
         this.m_price = this.Price();
+        // Same numbers as Dark Future's Conditions screen: level, then progress toward the next.
         let level = RTCInjury.Level();
-        let message = s"Patch up V's injuries (Injury \(level)) for €$\(this.m_price)? This clears every Injury level, like a full course of Trauma Kits.";
+        let progress = RoundF(RTCInjury.Amount() - Cast<Float>(level) * 100.0);
+        let message = s"Patch up V's injuries (Injury \(level), \(progress)/100) for €$\(this.m_price)? This clears every Injury level, like a full course of Trauma Kits.";
         this.m_token = GenericMessageNotification.Show(this.m_owner, "Trauma care", message, GenericMessageNotificationType.YesNo);
         this.m_token.RegisterListener(this, n"OnTreatConfirmed");
         return true;
