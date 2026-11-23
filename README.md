@@ -28,3 +28,7 @@ Copy `r6` into the game folder, or install the archive with MO2 or Vortex.
 
 - It adds one button to the ripperdoc screen and wraps `RipperDocGameController.OnInitialize`. It doesn't replace any game function.
 - The button sits above the bottom-right corner, left of where cyberware loadout mods tend to put theirs.
+
+## License
+
+[MIT](LICENSE).
